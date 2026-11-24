@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>little joys. | Compliment generator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #29233d;
+      --muted: #686379;
+      --purple: #7158d9;
+      --purple-dark: #5b42bf;
+      --border: #ded7e9;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      color: var(--ink);
+      font: 1rem/1.5 var(--sans);
+      background-color: #faf9ff;
+      background-image:
+        radial-gradient(ellipse at 12% 32%, #f9e5ee91, transparent 39%),
+        radial-gradient(ellipse at 88% 66%, #e2d8fb9c, transparent 44%),
+        radial-gradient(#9583a825 .7px, transparent .9px);
+      background-size: auto, auto, 13px 13px;
+    }
+
+    header, main { width: calc(100% - 2rem); margin-inline: auto; }
+
+    header {
+      max-width: 72rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: 1rem .15rem;
+      border-bottom: 1px solid #dcd4e7;
+    }
+
+    .brand { display: flex; align-items: center; gap: .55rem; }
+    .brand svg { width: 2.2rem; height: 2.2rem; transform: rotate(-8deg); }
+    .brand strong { font: 600 1.65rem/1 var(--serif); letter-spacing: -.075em; }
+    .brand b, h1 em { color: var(--purple); }
+    .descriptor, footer { color: var(--muted); font-size: .81rem; }
+    main { flex: 1; max-width: 43rem; }
+    .intro { text-align: center; padding: clamp(2rem, 6vh, 4rem) 0 1.6rem; }
+
+    h1 {
+      margin: 0;
+      font: 600 clamp(2.55rem, 7vw, 4.3rem)/1.04 var(--serif);
+      letter-spacing: -.06em;
+    }
+
+    h1 em { font-weight: 500; }
+    .intro p { margin: 1rem auto 0; color: var(--muted); text-wrap: balance; }
+
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+    .sr-only, .filters input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .filters, .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .5rem;
+    }
+
+    .filters label { position: relative; cursor: pointer; }
+
+    .filters span {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.75rem;
+      padding: .45rem .9rem;
+      border: 1px solid var(--border);
+      border-radius: 3rem;
+      color: var(--muted);
+      background: #ffffffdb;
+      font-size: .875rem;
+      font-weight: 600;
+    }
+
+    /* The check occupies the same space in both states, keeping the row still. */
+    .filters span::before {
+      content: "";
+      width: .45rem;
+      height: .23rem;
+      margin-right: .36rem;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: translateY(-1px) rotate(-45deg);
+      visibility: hidden;
+    }
+
+    .filters input:checked + span {
+      color: white;
+      border-color: var(--purple-dark);
+      background: linear-gradient(155deg, var(--purple), var(--purple-dark));
+      box-shadow: inset 0 1px 0 #ffffff36, 0 2px 5px #49347820;
+    }
+
+    .filters input:checked + span::before { visibility: visible; }
+
+    button:focus-visible, textarea:focus-visible, .filters input:focus-visible + span {
+      outline: 3px solid #49388a;
+      outline-offset: 4px;
+    }
+
+    /* The postcard and its stamp stay still. */
+    .stack {
+      position: relative;
+      isolation: isolate;
+      margin: 1.9rem .55rem 2rem;
+    }
+
+    .stack::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: .45rem -.16rem -.24rem;
+      border: 1px solid #d4c6e3;
+      border-radius: 1.1rem;
+      background: linear-gradient(125deg, #efe4f6, #ddd0ee);
+      transform: rotate(-1.45deg);
+      box-shadow: 0 18px 30px -17px #57446e53;
+    }
+
+    .postcard {
+      --wash: #f7e9f2;
+      --stamp-paper: #f9dce6;
+      --stamp-ink: #a54f73;
+      --stamp-edge: #c998b0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      min-height: 18.5rem;
+      padding: 1.4rem clamp(1.15rem, 5vw, 2.55rem) 1.05rem;
+      border: 1px solid #ded1dc;
+      border-radius: 1rem;
+      background:
+        radial-gradient(ellipse at 99% 0%, var(--wash), transparent 43%),
+        linear-gradient(155deg, #fff, #fffdfb 65%, #f9f5f1);
+      box-shadow: inset 0 0 0 4px #ffffff70, 0 2px 4px #65546f16;
+    }
+
+    .postcard[data-category="Motivation"] {
+      --wash: #faf0d9;
+      --stamp-paper: #f8e7bd;
+      --stamp-ink: #85582a;
+      --stamp-edge: #c7ac7b;
+    }
+
+    .postcard[data-category="Kindness"] {
+      --wash: #e6f2e7;
+      --stamp-paper: #d8ebda;
+      --stamp-ink: #466a4d;
+      --stamp-edge: #9cb89d;
+    }
+
+    .postcard[data-category="Confidence"] {
+      --wash: #ede7fb;
+      --stamp-paper: #e5dcf8;
+      --stamp-ink: #6b528d;
+      --stamp-edge: #ae9cc5;
+    }
+
+    .postcard::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: .4rem;
+      background: repeating-linear-gradient(
+        125deg, #baa8dc 0 12px, #fffaf7 12px 24px,
+        #eaa1b9 24px 36px, #fffaf7 36px 48px
+      );
+    }
+
+    .card-head { display: flex; justify-content: space-between; align-items: flex-start; }
+    .address, .signature { color: var(--muted); font: italic 1.14rem var(--serif); }
+    .address { padding-top: .55rem; }
+    .address i { padding-inline: .15rem 1.7rem; border-bottom: 1px solid #d6cad8; }
+    .postage { display: flex; align-items: center; padding-right: .2rem; }
+    .postmark { width: clamp(3.5rem, 11vw, 5.4rem); margin-right: -.75rem; z-index: 1; }
+
+    .stamp {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 3.35rem;
+      height: 4rem;
+      color: var(--stamp-ink);
+      transform: rotate(8deg);
+      filter: drop-shadow(1px 2px 1px #49344d26);
+    }
+
+    .stamp::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--stamp-paper);
+      mask:
+        linear-gradient(#000 0 0) center / calc(100% - 6px) calc(100% - 6px) no-repeat,
+        radial-gradient(circle, #000 58%, transparent 63%) 0 0 / 6px 6px round;
+    }
+
+    .stamp svg {
+      position: relative;
+      width: calc(100% - 11px);
+      height: calc(100% - 11px);
+      border: 1px solid var(--stamp-edge);
+    }
+
+    .message { width: 100%; margin: auto; text-align: center; padding: .7rem 0 1rem; }
+    .kind { color: var(--stamp-ink); font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+
+    /* All messages share one grid cell. Hidden alternatives reserve the height
+       of the longest wrapped line set at the current viewport and font size. */
+    .quote-space {
+      display: grid;
+      max-width: 30ch;
+      margin: .55rem auto 0;
+      font: 500 clamp(1.5rem, 3.9vw, 2rem)/1.28 var(--serif);
+      letter-spacing: -.036em;
+      text-wrap: balance;
+      overflow-wrap: anywhere;
+    }
+
+    .quote-space > * { grid-area: 1 / 1; align-self: center; margin: 0; }
+    .measure { visibility: hidden; pointer-events: none; user-select: none; }
+    .signature { align-self: flex-end; font-size: .98rem; }
+    .signature span, footer span { color: #ad5577; }
+
+    /* The hit area stays in place while the visible button face lifts. */
+    .actions { gap: .7rem; }
+    .action-button {
+      position: relative;
+      display: inline-grid;
+      padding: 0;
+      border: 0;
+      border-radius: .95rem;
+      background: transparent;
+      color: var(--ink);
+      font: 600 .94rem var(--sans);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .button-face {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      min-height: 3rem;
+      padding: .65rem 1.18rem;
+      border: 1px solid var(--border);
+      border-radius: inherit;
+      background: linear-gradient(#fff, #fbf8ff);
+      box-shadow: inset 0 1px 0 #fff, 0 2px 0 #ded7e7;
+    }
+
+    .button-face svg { width: 1.1rem; height: 1.1rem; flex: none; }
+
+    #generate .button-face {
+      color: white;
+      border-color: var(--purple-dark);
+      background: linear-gradient(155deg, #785fdb, #644ac7 72%);
+      box-shadow: inset 0 1px 0 #ffffff52, 0 3px 0 #503aa2, 0 6px 14px #7057b02b;
+    }
+
+    /* A brief pair of four-point glints, anchored to the button corner. */
+    .glint {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      width: 12px;
+      height: 15px;
+      top: -8px;
+      right: 6px;
+      background: #b27acd;
+      clip-path: polygon(50% 0, 61% 35%, 100% 50%, 62% 62%, 50% 100%, 38% 63%, 0 50%, 38% 37%);
+    }
+
+    .glint.small {
+      width: 7px;
+      height: 9px;
+      top: 1px;
+      right: -3px;
+      background: #d37da0;
+    }
+
+    .action-button:focus-visible .button-face { border-color: #8065b2; }
+    .action-button:focus-visible .glint { opacity: 1; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .filters label:hover input:not(:checked) + span {
+        border-color: #bfaed4;
+        background: #f7f1fc;
+        color: #4e3c68;
+        box-shadow: 0 3px 8px #72558e17;
+      }
+
+      #generate:hover .button-face {
+        background: linear-gradient(145deg, #8067e0, #6147c3 80%);
+        box-shadow: inset 0 1px 0 #ffffff68, 0 3px 0 #503aa2, 0 9px 17px #7057b03b;
+      }
+
+      #copy:hover .button-face {
+        border-color: #b8a5ce;
+        color: #604482;
+        background: linear-gradient(145deg, #fff, #f4eafa);
+        box-shadow: inset 0 1px 0 #fff, 0 2px 0 #cdbfdc, 0 7px 12px #72558e22;
+      }
+
+      .action-button:hover .glint { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .button-face, .filters span {
+        transition: transform 170ms ease-out, box-shadow 170ms ease-out, border-color 170ms ease-out;
+      }
+
+      .action-button:active .button-face { transform: translateY(1px); }
+    }
+
+    @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+      .action-button:hover .button-face { transform: translateY(-3px); }
+      .action-button:hover:active .button-face { transform: translateY(1px); }
+      .filters label:hover span { transform: translateY(-2px); }
+      .filters label:active span { transform: translateY(0); }
+      .action-button:hover .glint { animation: twinkle 600ms ease-out both; }
+      .action-button:hover .glint.small { animation-delay: 80ms; }
+    }
+
+    @keyframes twinkle {
+      0%   { opacity: 0; transform: translateY(3px) scale(.25) rotate(-18deg); }
+      45%  { opacity: 1; transform: translateY(-2px) scale(1.1) rotate(4deg); }
+      100% { opacity: .85; transform: translateY(-2px) scale(.82); }
+    }
+
+    #status {
+      min-height: 1.5rem;
+      margin: .6rem 0 .2rem;
+      color: var(--muted);
+      text-align: center;
+      font-size: .875rem;
+    }
+
+    #manual { max-width: 32rem; margin: 0 auto 1rem; }
+    textarea { display: block; width: 100%; margin-top: .45rem; padding: .7rem; font: inherit; }
+    footer { padding: 1rem; text-align: center; }
+    .symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    @media (max-width: 32rem) {
+      .filters { gap: .35rem; }
+      .filters span { padding-inline: .65rem; }
+      .button-face { padding-inline: .9rem; }
+      .descriptor { font-size: .75rem; }
+      .stack { margin-block: 1.45rem 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <symbol id="tulip" viewBox="0 0 40 50">
+        <path d="M20 43q-3-12 0-23m-1 17q-9-1-12-9 10 1 12 9m0-5q9-1 12-10-9 2-12 10" fill="#78947a" stroke="#58745e" stroke-width="1.2"/>
+        <path d="M20 26Q8 21 9 9l7 5 4-8 4 8 7-6q1 14-11 18Z" fill="#de85a1" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M13 13q3 8 7 11l6-12" fill="none" stroke="#f6b9ca" stroke-width="1.5"/>
+      </symbol>
+      <symbol id="sunrise" viewBox="0 0 40 50">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M10 29a10 10 0 0 1 20 0" fill="#e8b65d"/>
+          <path d="M20 10v4m-12 2 3 3m21-3-3 3M4 25l4 1m28-1-4 1"/>
+          <path d="M4 30q7-3 15 0t17 0M7 35q7-2 14 0t12 0m-21 5q7-2 16 0"/>
+        </g>
+      </symbol>
+      <symbol id="sprout" viewBox="0 0 40 50">
+        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 37V24" fill="none"/>
+          <path d="M20 28Q7 27 6 15q13 0 14 13Z" fill="#91b49a"/>
+          <path d="M20 24Q21 10 34 9q-1 13-14 15Z" fill="#aac786"/>
+          <path d="m12 20 8 8m7-12-7 8M8 39q12-7 24 0m-20 4q8-3 16 0" fill="none"/>
+        </g>
+      </symbol>
+      <symbol id="comet" viewBox="0 0 40 50">
+        <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m25 9 2.4 6 6.6.7-5 4.3 1.4 6.5-5.4-3.6-5.8 3.3 1.7-6.4-4.7-4.6 6.5-.4Z" fill="#f5d383"/>
+          <path d="M20 25Q14 35 6 38m17-10q-6 10-13 13m14-8-4 6" fill="none"/>
+          <path d="m8 15 .9 2.5 2.6.8-2.6.9L8 22l-.8-2.8-2.7-.9 2.7-.8Z" fill="#b19bce" stroke="none"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M3 9h26v19H3z" fill="#f6e4ef" stroke="#63499a" stroke-width="1.6"/>
+        <path d="m3 28 9-10m17 10-9-10M3 9l13 12L29 9" fill="none" stroke="#63499a" stroke-width="1.6"/>
+        <path d="M16 15S7 10 9 5.5c1.4-3 5.2-2.3 7 .6 2.2-3.2 5.8-3.3 7-.5 1.9 4-7 9.4-7 9.4Z" fill="#ff8fad" stroke="#63499a" stroke-width="1.3"/>
+      </svg>
+      <strong>little joys<b>.</b></strong>
+    </div>
+    <span class="descriptor">Compliment generator</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="headline">
+      <h1 id="headline">A little kindness<br><em>goes a long way.</em></h1>
+      <p>A hundred little compliments to keep or pass along.</p>
+    </section>
+
+    <section aria-label="Generate a compliment">
+      <fieldset>
+        <legend class="sr-only">Choose a compliment category</legend>
+        <div class="filters">
+          <label><input type="radio" name="category" value="All" checked><span>All</span></label>
+          <label><input type="radio" name="category" value="Motivation"><span>Motivation</span></label>
+          <label><input type="radio" name="category" value="Friendship"><span>Friendship</span></label>
+          <label><input type="radio" name="category" value="Kindness"><span>Kindness</span></label>
+          <label><input type="radio" name="category" value="Confidence"><span>Confidence</span></label>
+        </div>
+      </fieldset>
+
+      <div class="stack">
+        <article id="postcard" class="postcard" data-category="Friendship" aria-label="Your compliment">
+          <div class="card-head">
+            <span class="address">To: <i>you</i></span>
+            <div class="postage" aria-hidden="true">
+              <svg class="postmark" viewBox="0 0 90 45">
+                <path d="M2 14c16-12 28 9 44 0s28-1 42 1M2 21c16-12 28 9 44 0s28-1 42 1M2 28c16-12 28 9 44 0s28-1 42 1" fill="none" stroke="#aa9cb5" stroke-width="1.25"/>
+              </svg>
+              <div class="stamp">
+                <svg viewBox="0 0 40 50"><use id="stamp-art" href="#tulip"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="message">
+            <span id="kind" class="kind">Friendship</span>
+            <div id="quote-space" class="quote-space">
+              <p id="compliment">You remember the little things people tell you in passing.</p>
+            </div>
+          </div>
+          <div class="signature" aria-hidden="true"><span>♡</span> little joys.</div>
+        </article>
+      </div>
+
+      <div class="actions">
+        <button id="generate" class="action-button" type="button">
+          <span class="button-face">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="m10 2 2 6 5 2-5 2-2 6-2-6-5-2 5-2 2-6Zm9 12 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>
+            </svg>
+            Another Compliment
+          </span>
+          <span class="glint" aria-hidden="true"></span>
+          <span class="glint small" aria-hidden="true"></span>
+        </button>
+
+        <button id="copy" class="action-button" type="button">
+          <span class="button-face">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <rect x="8" y="8" width="12" height="13" rx="2"/>
+              <path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>
+            </svg>
+            Copy
+          </span>
+          <span class="glint" aria-hidden="true"></span>
+          <span class="glint small" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <p id="announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+      <p id="status" role="status"></p>
+      <div id="manual" hidden>
+        <label for="copy-text">Copy the selected compliment using your device’s copy command.</label>
+        <textarea id="copy-text" rows="3" readonly></textarea>
+      </div>
+    </section>
+  </main>
+
+  <footer>Made to make you smile <span aria-hidden="true">♡</span></footer>
+
+  <script>
+    "use strict";
+
+    const compliments = {
+      Motivation: [
+        "You make starting over look like a skill worth practicing.",
+        "You keep asking questions after the easy answers run out.",
+        "You find a small first step when a project feels enormous.",
+        "I like how you give a rough first draft a chance to become something.",
+        "You can change your approach without losing sight of what matters.",
+        "Your willingness to be a beginner makes learning alongside you easier.",
+        "You notice progress that would be easy to overlook.",
+        "You put care into the parts of your work that few people will see.",
+        "You follow through even after the excitement of a new idea wears off.",
+        "You turn good advice into something you actually try.",
+        "You make room for a break and still find your way back.",
+        "You ask for help early enough to give a good idea a real chance.",
+        "If anyone could persuade a fitted sheet to fold neatly, it would be you.",
+        "You make the second attempt look interesting enough to try.",
+        "I like that you’ll learn a whole new skill because one small thing made you curious.",
+        "You can look at a lopsided first pancake and see breakfast.",
+        "Working beside you makes the blank page feel a lot less intimidating.",
+        "You’re the reason “we should make that someday” occasionally becomes a Saturday plan.",
+        "You’ve got the patience to untangle headphones and the good sense to put music on afterward.",
+        "You make finishing one small thing feel worth celebrating.",
+        "Your experiments always leave us with something: an answer, a better question, or a very funny photo.",
+        "You show up for practice even on the days when your shoes feel particularly far away.",
+        "You know when an idea needs another hour and when it needs a sandwich.",
+        "I admire how you go back and fix the thing you could easily have left almost right.",
+        "You make trying something difficult feel like an invitation."
+      ],
+      Friendship: [
+        "You remember the little things people tell you in passing.",
+        "A walk around the block with you can feel like a whole afternoon well spent.",
+        "You make it easy to pick up a conversation after a long time apart.",
+        "I like how we can sit quietly and still feel like we’re catching up.",
+        "You know when a friend needs a second opinion and when they just need company.",
+        "Your invitations make people feel wanted, even when they can’t come.",
+        "You have a gift for calling just to hear how the story turned out.",
+        "You celebrate a friend’s small win like you know what it took.",
+        "You tell stories in a way that makes everyone at the table feel included.",
+        "Doing an ordinary errand with you somehow becomes a good memory.",
+        "You give people room to change since the last time you saw them.",
+        "Your very specific recommendations make me feel like you really know me.",
+        "I’d trust you with the playlist on a road trip. Even the last hour.",
+        "You’re the person I want to text when I see a dog wearing shoes.",
+        "You can turn a wrong turn into the part of the trip we talk about later.",
+        "You remember the cast of my work stories better than some of my coworkers do.",
+        "With you, “one quick story” is a completely reasonable way to spend an hour.",
+        "You’re very good company for the five minutes when the cookies are too hot to eat.",
+        "Your voice notes have excellent plot development.",
+        "I like how your stories come with sound effects when ordinary words won’t do.",
+        "You notice when I’m telling the long version because I need someone to hear it.",
+        "You know my snack order with a level of accuracy science should look into.",
+        "You save me a seat in ways that have very little to do with chairs.",
+        "You can make a rainy afternoon feel like we picked the weather ourselves.",
+        "Even your “this reminded me of you” messages are things I want to keep."
+      ],
+      Kindness: [
+        "You ask the quiet person what they think and give them time to answer.",
+        "You make asking for a favor feel surprisingly easy.",
+        "You say thank you in a way that tells people exactly what they did well.",
+        "You notice who still needs a seat before anyone has to ask.",
+        "You find a gentle way to tell someone the truth.",
+        "You give credit to the person whose idea started the conversation.",
+        "You help someone learn without making them feel behind.",
+        "You notice when a joke lands badly and make space to put things right.",
+        "You’re good at offering the kind of help someone actually asked for.",
+        "You make being new somewhere feel a little less lonely.",
+        "You take people’s small worries seriously.",
+        "You notice the effort behind a gesture, even when it comes out awkwardly.",
+        "You’re the kind of person who slows down to walk beside whoever fell behind.",
+        "You’d give someone the corner brownie even if you’d been eyeing it the whole time.",
+        "You learn how to say someone’s name and remember it the next time.",
+        "You give directions as if you remember what it feels like to be lost.",
+        "You ask a follow-up question that shows you really heard the first answer.",
+        "You’d move a snail off the path and probably wish it luck with the rest of its day.",
+        "You make the person tidying up feel as much a part of the party as the host.",
+        "You find something specific to love about a gift someone made by hand.",
+        "You have a talent for explaining the rules before the game gets confusing.",
+        "You give people a graceful way out when they forget what they were about to say.",
+        "You’re willing to be the first one on the dance floor so someone else can be the second.",
+        "You can make a new neighbor feel at home before they’ve unpacked the mugs.",
+        "You’d hold the elevator through an awkwardly long hallway jog. That’s real commitment."
+      ],
+      Confidence: [
+        "Your point of view gives people something new to consider.",
+        "You can say “I’m still figuring that out” with real ease.",
+        "You know which details are worth speaking up about.",
+        "You can take a compliment with the same warmth you give one.",
+        "Your taste comes through in the small choices you make.",
+        "You have a way of disagreeing that keeps the conversation open.",
+        "You trust your curiosity enough to follow an unusual idea.",
+        "You can admit you’ve changed your mind and explain what you learned.",
+        "You make a clear decision while leaving room for someone else’s opinion.",
+        "You ask the question that half the room was hoping someone would ask.",
+        "You know how to say what you need in your own words.",
+        "You bring your own sense of humor to things, and it’s easy to recognize.",
+        "You could wear the loud socks on picture day and make everyone wish they had.",
+        "You make liking what you like look easy. It gives other people permission to do the same.",
+        "You claim your karaoke song with admirable disregard for the high note.",
+        "You can let a pause sit for a second. It makes people listen when you do speak.",
+        "You have the courage to show someone a sketch while the pencil lines are still there.",
+        "You make your own choices, right down to the wonderfully unexpected ice cream flavor.",
+        "Your laugh sounds entirely like you. I could pick it out from the next room.",
+        "You can say a simple, kind no and still make the other person feel respected.",
+        "You look at an empty dance floor and see excellent legroom.",
+        "You let yourself be excited about things before you know whether anyone else likes them.",
+        "You’d name a houseplant something wildly formal and introduce it with a straight face.",
+        "I like how you own the thing you made, right down to the slightly crooked bit.",
+        "You trust your sense of timing. Some of your best jokes are just one perfectly placed word."
+      ]
+    };
+
+    const stamps = {
+      Motivation: "#sunrise",
+      Friendship: "#tulip",
+      Kindness: "#sprout",
+      Confidence: "#comet"
+    };
+
+    const categories = Object.keys(compliments);
+    const remaining = new Map();
+    const card = document.querySelector("#postcard");
+    const kind = document.querySelector("#kind");
+    const quote = document.querySelector("#compliment");
+    const art = document.querySelector("#stamp-art");
+    const announcement = document.querySelector("#announcement");
+    const feedback = document.querySelector("#status");
+    const manual = document.querySelector("#manual");
+    const copyText = document.querySelector("#copy-text");
+    const copyButton = document.querySelector("#copy");
+    let revision = 0;
+
+    // Reserve the postcard's responsive height once, outside the interaction path.
+    const measures = document.createDocumentFragment();
+    for (const text of Object.values(compliments).flat()) {
+      const line = document.createElement("span");
+      line.className = "measure";
+      line.setAttribute("aria-hidden", "true");
+      line.textContent = text;
+      measures.append(line);
+    }
+    document.querySelector("#quote-space").append(measures);
+
+    function refill(category) {
+      remaining.set(category, [...compliments[category]]);
+    }
+
+    function randomIndex(length) {
+      return Math.floor(Math.random() * length);
+    }
+
+    categories.forEach(refill);
+    quote.textContent = remaining.get("Friendship").shift();
+
+    function draw(category) {
+      if (category === "All") {
+        let available = categories.filter(name => remaining.get(name).length > 0);
+        if (available.length === 0) {
+          categories.forEach(refill);
+          available = categories;
+        }
+        category = available[randomIndex(available.length)];
+      } else if (remaining.get(category).length === 0) {
+        refill(category);
+      }
+
+      const pool = remaining.get(category);
+      let index = randomIndex(pool.length);
+      if (pool[index] === quote.textContent && pool.length > 1) {
+        index = (index + 1 + randomIndex(pool.length - 1)) % pool.length;
+      }
+      return { category, text: pool.splice(index, 1)[0] };
+    }
+
+    function displayNext() {
+      const selected = document.querySelector('input[name="category"]:checked').value;
+      const next = draw(selected);
+      revision++;
+      manual.hidden = true;
+      feedback.textContent = "";
+      kind.textContent = next.category;
+      quote.textContent = next.text;
+      card.dataset.category = next.category;
+      art.setAttribute("href", stamps[next.category]);
+      announcement.textContent = `${next.category}. ${next.text}`;
+    }
+
+    async function copyCompliment() {
+      const text = quote.textContent;
+      const request = ++revision;
+      feedback.textContent = "";
+      manual.hidden = true;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        if (request === revision) feedback.textContent = "Copied!";
+        return;
+      } catch {
+        if (request !== revision) return;
+      }
+
+      manual.hidden = false;
+      copyText.value = text;
+      copyText.focus();
+      copyText.select();
+
+      try {
+        if (document.execCommand("copy")) {
+          manual.hidden = true;
+          copyButton.focus();
+          feedback.textContent = "Copied!";
+        }
+      } catch {
+        // The selected text remains available for manual copying.
+      }
+    }
+
+    document.querySelector("fieldset").addEventListener("change", displayNext);
+    document.querySelector("#generate").addEventListener("click", displayNext);
+    copyButton.addEventListener("click", copyCompliment);
+  </script>
+</body>
+</html>
