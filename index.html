@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Little Joys. | Compliments &amp; jokes</title>
   <link rel="icon" type="image/png" href="favicon.png">
+
   <style>
     :root {
       color-scheme: light;
@@ -107,7 +109,7 @@
       outline-offset: 4px;
     }
 
-    /* The paper, stamp, and controls retain their positions during a reveal. */
+/* The paper, stamp, and controls retain their positions during a reveal. */
     .stack { position: relative; isolation: isolate; margin: 1.8rem .55rem 1.9rem; }
     .stack::before {
       content: "";
@@ -224,7 +226,7 @@
     .signature { align-self: flex-end; font-size: .98rem; }
     .signature span, footer span { color: #ad5577; }
 
-    /* The button face lifts while its clickable area stays in place. */
+/* The button face lifts while its clickable area stays in place. */
     .actions { gap: .7rem; }
     .action-button {
       position: relative;
@@ -576,7 +578,7 @@
       ]
     };
 
-    // Each entry is [setup, punchline], or [one-liner] for an instant joke.
+// Each entry is [setup, punchline], or [one-liner] for an instant joke.
     const jokes = [
       ["Why did the postcard get the job?", "It already had a stamp of approval."],
       ["My cat finally learned to fetch.", "I throw the toy. She watches me fetch it."],
@@ -631,10 +633,11 @@
       ["I speak fluent printer. “Paper jam” usually means “please open every door I have.”"],
       ["I made a tiny hat for my cactus. Finally, a hobby with a point."],
       ["Our family recipe says “add cheese to taste.” At last, instructions I was born to follow."],
-      ["I bought a bookmark that says “You fell asleep here.” I appreciate accurate recordkeeping."]
+      ["I bought a bookmark that says “You fell asleep here.” I appreciate accurate recordkeeping."],
 
 
-      // Automotive marketing vs. reality
+
+// Automotive marketing vs. reality
       ["Marketing department: Premium ambient lighting.",
       "I have windows."],
 
@@ -656,8 +659,7 @@
       ["Marketing department: Completely redesigned interior.",
       "WHAT DID YOU REMOVE?!"],
 
-      
-      // Automotive marketing vs. reality
+// Automotive marketing vs. reality
       ["Marketing department: Exclusive VIP captain's chairs.",
       "Apparently, one family member has been voted off the vehicle."],
 
@@ -694,7 +696,7 @@
       ["Marketing department: Introducing our latest premium upgrade.",
       "Please tell me the wheels are still included."],
 
-      // Family adventures
+// Family adventures
       ["Dad says his old car has artificial intelligence.",
       "He asks for coffee and someone in the back hands him a cup."],
 
@@ -725,7 +727,7 @@
       ["We went for a drive without a destination.",
       "Somehow, we still ended up at a supermarket."],
 
-      // Technology and programming
+// Technology and programming
       ["Why did the programmer take a blanket to work?",
       "There were too many open Windows."],
 
@@ -747,7 +749,7 @@
       ["My phone told me my screen time was too high.",
       "I appreciate its concern. I read the report on my phone."],
 
-      // Crafts and creativity
+// Crafts and creativity
       ["I bought some yarn for a small crochet project.",
       "The yarn collection has since become a separate project."],
 
@@ -766,7 +768,7 @@
       ["My sketchbook is full of brilliant ideas.",
       "Some of them have even progressed beyond the title."],
 
-      // Everyday humor
+// Everyday humor
       ["I cleaned my room so thoroughly.",
       "Now I can't find anything."],
 
@@ -790,6 +792,7 @@
 
       ["I tried counting sheep to fall asleep.",
       "Now I'm wondering who owns the farm."]
+
 
     ];
 
@@ -821,7 +824,7 @@
     let copyRevision = 0;
     let currentText = "";
 
-    // Size the shared grid once so even a long punchline cannot push the buttons down.
+// Size the shared grid once so even a long punchline cannot push the buttons down.
     const sizingFragment = document.createDocumentFragment();
     const cardsToMeasure = [
       ...Object.values(compliments).flat().map(text => [text]),
@@ -867,7 +870,7 @@
     currentText = lastCompliment;
 
     function showCard(category, firstLine, secondLine = "") {
-      // A new draw cancels any punchline still waiting from the previous joke.
+// A new draw cancels any punchline still waiting from the previous joke.
       clearTimeout(revealTimer);
       copyRevision++;
       manual.hidden = true;
@@ -880,7 +883,7 @@
       punchline.textContent = secondLine;
       punchline.hidden = !secondLine;
 
-      // Copy always includes the complete joke, even during its comic pause.
+// Copy always includes the complete joke, even during its comic pause.
       currentText = secondLine ? `${firstLine}\n${secondLine}` : firstLine;
       copyButton.setAttribute("aria-label", category === "Joke" ? "Copy the full joke" : "Copy this compliment");
       announcement.textContent = `${category}. ${firstLine}`;
@@ -939,7 +942,7 @@
           status.textContent = "Copied!";
         }
       } catch {
-        // The selected text remains ready for manual copying.
+// The selected text remains ready for manual copying.
       }
     }
 
@@ -950,3 +953,4 @@
   </script>
 </body>
 </html>
+
