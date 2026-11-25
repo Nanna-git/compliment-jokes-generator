@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>little joys. | Compliment generator</title>
+  <title>little joys. | Compliments &amp; jokes</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
     :root {
@@ -11,13 +11,13 @@
       --ink: #29233d;
       --muted: #686379;
       --purple: #7158d9;
-      --purple-dark: #5b42bf;
       --border: #ded7e9;
       --serif: Georgia, "Times New Roman", serif;
       --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
 
     body {
       margin: 0;
@@ -36,7 +36,6 @@
     }
 
     header, main { width: calc(100% - 2rem); margin-inline: auto; }
-
     header {
       max-width: 72rem;
       display: flex;
@@ -54,18 +53,11 @@
     .descriptor, footer { color: var(--muted); font-size: .81rem; }
     main { flex: 1; max-width: 43rem; }
     .intro { text-align: center; padding: clamp(2rem, 6vh, 4rem) 0 1.6rem; }
-
-    h1 {
-      margin: 0;
-      font: 600 clamp(2.55rem, 7vw, 4.3rem)/1.04 var(--serif);
-      letter-spacing: -.06em;
-    }
-
+    h1 { margin: 0; font: 600 clamp(2.55rem, 7vw, 4.3rem)/1.04 var(--serif); letter-spacing: -.06em; }
     h1 em { font-weight: 500; }
     .intro p { margin: 1rem auto 0; color: var(--muted); text-wrap: balance; }
 
     fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-
     .sr-only, .filters input {
       position: absolute;
       width: 1px;
@@ -75,17 +67,9 @@
       white-space: nowrap;
     }
 
-    .filters, .actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: .5rem;
-    }
-
+    .filters, .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
     .filters label { position: relative; cursor: pointer; }
-
     .filters span {
-      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -93,31 +77,29 @@
       padding: .45rem .9rem;
       border: 1px solid var(--border);
       border-radius: 3rem;
-      color: var(--muted);
       background: #ffffffdb;
+      color: var(--muted);
       font-size: .875rem;
       font-weight: 600;
     }
 
-    /* The check occupies the same space in both states, keeping the row still. */
     .filters span::before {
       content: "";
       width: .45rem;
       height: .23rem;
       margin-right: .36rem;
-      border-left: 2px solid currentColor;
-      border-bottom: 2px solid currentColor;
+      border-left: 2px solid;
+      border-bottom: 2px solid;
       transform: translateY(-1px) rotate(-45deg);
       visibility: hidden;
     }
 
     .filters input:checked + span {
       color: white;
-      border-color: var(--purple-dark);
-      background: linear-gradient(155deg, var(--purple), var(--purple-dark));
+      border-color: #5b42bf;
+      background: linear-gradient(155deg, var(--purple), #5b42bf);
       box-shadow: inset 0 1px 0 #ffffff36, 0 2px 5px #49347820;
     }
-
     .filters input:checked + span::before { visibility: visible; }
 
     button:focus-visible, textarea:focus-visible, .filters input:focus-visible + span {
@@ -125,13 +107,8 @@
       outline-offset: 4px;
     }
 
-    /* The postcard and its stamp stay still. */
-    .stack {
-      position: relative;
-      isolation: isolate;
-      margin: 1.9rem .55rem 2rem;
-    }
-
+    /* The paper, stamp, and controls retain their positions during a reveal. */
+    .stack { position: relative; isolation: isolate; margin: 1.8rem .55rem 1.9rem; }
     .stack::before {
       content: "";
       position: absolute;
@@ -147,7 +124,7 @@
     .postcard {
       --wash: #f7e9f2;
       --stamp-paper: #f9dce6;
-      --stamp-ink: #a54f73;
+      --stamp-ink: #98486a;
       --stamp-edge: #c998b0;
       display: flex;
       flex-direction: column;
@@ -163,25 +140,17 @@
       box-shadow: inset 0 0 0 4px #ffffff70, 0 2px 4px #65546f16;
     }
 
-    .postcard[data-category="Motivation"] {
-      --wash: #faf0d9;
-      --stamp-paper: #f8e7bd;
-      --stamp-ink: #85582a;
-      --stamp-edge: #c7ac7b;
+    .postcard[data-kind="Motivation"] {
+      --wash: #faf0d9; --stamp-paper: #f8e7bd; --stamp-ink: #85582a; --stamp-edge: #c7ac7b;
     }
-
-    .postcard[data-category="Kindness"] {
-      --wash: #e6f2e7;
-      --stamp-paper: #d8ebda;
-      --stamp-ink: #466a4d;
-      --stamp-edge: #9cb89d;
+    .postcard[data-kind="Kindness"] {
+      --wash: #e6f2e7; --stamp-paper: #d8ebda; --stamp-ink: #466a4d; --stamp-edge: #9cb89d;
     }
-
-    .postcard[data-category="Confidence"] {
-      --wash: #ede7fb;
-      --stamp-paper: #e5dcf8;
-      --stamp-ink: #6b528d;
-      --stamp-edge: #ae9cc5;
+    .postcard[data-kind="Confidence"] {
+      --wash: #ede7fb; --stamp-paper: #e5dcf8; --stamp-ink: #6b528d; --stamp-edge: #ae9cc5;
+    }
+    .postcard[data-kind="Joke"] {
+      --wash: #fff0df; --stamp-paper: #ffe4bd; --stamp-ink: #855025; --stamp-edge: #d4ab80;
     }
 
     .postcard::before {
@@ -222,7 +191,6 @@
         linear-gradient(#000 0 0) center / calc(100% - 6px) calc(100% - 6px) no-repeat,
         radial-gradient(circle, #000 58%, transparent 63%) 0 0 / 6px 6px round;
     }
-
     .stamp svg {
       position: relative;
       width: calc(100% - 11px);
@@ -230,11 +198,8 @@
       border: 1px solid var(--stamp-edge);
     }
 
-    .message { width: 100%; margin: auto; text-align: center; padding: .7rem 0 1rem; }
+    .message { width: 100%; margin: auto; padding: .7rem 0 1rem; text-align: center; }
     .kind { color: var(--stamp-ink); font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-
-    /* All messages share one grid cell. Hidden alternatives reserve the height
-       of the longest wrapped line set at the current viewport and font size. */
     .quote-space {
       display: grid;
       max-width: 30ch;
@@ -245,12 +210,21 @@
       overflow-wrap: anywhere;
     }
 
-    .quote-space > * { grid-area: 1 / 1; align-self: center; margin: 0; }
+    .quote-space > * { grid-area: 1 / 1; align-self: center; }
+    .quote-space p { margin: 0; }
     .measure { visibility: hidden; pointer-events: none; user-select: none; }
+    .quote-space .punchline {
+      margin: .65rem 0 0;
+      color: #80502e;
+      font-size: .82em;
+      font-style: italic;
+      letter-spacing: -.015em;
+    }
+    .waiting { visibility: hidden; }
     .signature { align-self: flex-end; font-size: .98rem; }
     .signature span, footer span { color: #ad5577; }
 
-    /* The hit area stays in place while the visible button face lifts. */
+    /* The button face lifts while its clickable area stays in place. */
     .actions { gap: .7rem; }
     .action-button {
       position: relative;
@@ -264,117 +238,90 @@
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
-
     .button-face {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: .55rem;
+      gap: .5rem;
       min-height: 3rem;
-      padding: .65rem 1.18rem;
+      padding: .65rem 1.05rem;
       border: 1px solid var(--border);
       border-radius: inherit;
       background: linear-gradient(#fff, #fbf8ff);
       box-shadow: inset 0 1px 0 #fff, 0 2px 0 #ded7e7;
     }
-
     .button-face svg { width: 1.1rem; height: 1.1rem; flex: none; }
 
     #generate .button-face {
       color: white;
-      border-color: var(--purple-dark);
+      border-color: #5b42bf;
       background: linear-gradient(155deg, #785fdb, #644ac7 72%);
       box-shadow: inset 0 1px 0 #ffffff52, 0 3px 0 #503aa2, 0 6px 14px #7057b02b;
     }
+    #joke .button-face {
+      border-color: #d6b998;
+      color: #704424;
+      background: linear-gradient(155deg, #fff3e2, #f9debb);
+      box-shadow: inset 0 1px 0 #fff9, 0 2px 0 #d8b898;
+    }
 
-    /* A brief pair of four-point glints, anchored to the button corner. */
-    .glint {
+    .sparkles::before, .sparkles::after {
+      content: "";
       position: absolute;
       z-index: 1;
       pointer-events: none;
       opacity: 0;
-      width: 12px;
-      height: 15px;
       top: -8px;
       right: 6px;
-      background: #b27acd;
+      width: 12px;
+      height: 15px;
+      background: #ad79c7;
       clip-path: polygon(50% 0, 61% 35%, 100% 50%, 62% 62%, 50% 100%, 38% 63%, 0 50%, 38% 37%);
     }
-
-    .glint.small {
-      width: 7px;
-      height: 9px;
-      top: 1px;
-      right: -3px;
-      background: #d37da0;
-    }
-
-    .action-button:focus-visible .button-face { border-color: #8065b2; }
-    .action-button:focus-visible .glint { opacity: 1; }
+    .sparkles::after { width: 7px; height: 9px; top: 1px; right: -3px; background: #d37da0; }
+    #joke .sparkles::before { background: #c9904f; }
+    .action-button:focus-visible .sparkles::before,
+    .action-button:focus-visible .sparkles::after { opacity: 1; }
 
     @media (hover: hover) and (pointer: fine) {
-      .filters label:hover input:not(:checked) + span {
-        border-color: #bfaed4;
-        background: #f7f1fc;
-        color: #4e3c68;
-        box-shadow: 0 3px 8px #72558e17;
-      }
-
-      #generate:hover .button-face {
-        background: linear-gradient(145deg, #8067e0, #6147c3 80%);
-        box-shadow: inset 0 1px 0 #ffffff68, 0 3px 0 #503aa2, 0 9px 17px #7057b03b;
-      }
-
-      #copy:hover .button-face {
-        border-color: #b8a5ce;
-        color: #604482;
-        background: linear-gradient(145deg, #fff, #f4eafa);
-        box-shadow: inset 0 1px 0 #fff, 0 2px 0 #cdbfdc, 0 7px 12px #72558e22;
-      }
-
-      .action-button:hover .glint { opacity: 1; }
+      .filters label:hover input:not(:checked) + span { border-color: #bfaed4; background: #f7f1fc; }
+      .action-button:hover .button-face { filter: brightness(1.035); }
+      .action-button:hover .sparkles::before, .action-button:hover .sparkles::after { opacity: 1; }
     }
-
     @media (prefers-reduced-motion: no-preference) {
-      .button-face, .filters span {
-        transition: transform 170ms ease-out, box-shadow 170ms ease-out, border-color 170ms ease-out;
-      }
-
+      .button-face, .filters span { transition: transform 170ms ease-out, border-color 170ms ease-out; }
       .action-button:active .button-face { transform: translateY(1px); }
+      .punchline.revealed { animation: punchline-in 360ms ease-out both; }
     }
-
     @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
       .action-button:hover .button-face { transform: translateY(-3px); }
       .action-button:hover:active .button-face { transform: translateY(1px); }
       .filters label:hover span { transform: translateY(-2px); }
-      .filters label:active span { transform: translateY(0); }
-      .action-button:hover .glint { animation: twinkle 600ms ease-out both; }
-      .action-button:hover .glint.small { animation-delay: 80ms; }
+      .action-button:hover .sparkles::before, .action-button:hover .sparkles::after {
+        animation: twinkle 550ms ease-out both;
+      }
+      .action-button:hover .sparkles::after { animation-delay: 70ms; }
     }
-
     @keyframes twinkle {
-      0%   { opacity: 0; transform: translateY(3px) scale(.25) rotate(-18deg); }
-      45%  { opacity: 1; transform: translateY(-2px) scale(1.1) rotate(4deg); }
-      100% { opacity: .85; transform: translateY(-2px) scale(.82); }
+      from { opacity: 0; transform: translateY(3px) scale(.3) rotate(-16deg); }
+      45% { opacity: 1; transform: translateY(-2px) scale(1.12); }
+      to { opacity: .85; transform: translateY(-2px) scale(.82); }
+    }
+    @keyframes punchline-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    #status {
-      min-height: 1.5rem;
-      margin: .6rem 0 .2rem;
-      color: var(--muted);
-      text-align: center;
-      font-size: .875rem;
-    }
-
+    #status { min-height: 1.5rem; margin: .6rem 0 .2rem; color: var(--muted); text-align: center; font-size: .875rem; }
     #manual { max-width: 32rem; margin: 0 auto 1rem; }
     textarea { display: block; width: 100%; margin-top: .45rem; padding: .7rem; font: inherit; }
     footer { padding: 1rem; text-align: center; }
     .symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
 
     @media (max-width: 32rem) {
-      .filters { gap: .35rem; }
+      .filters, .actions { gap: .4rem; }
       .filters span { padding-inline: .65rem; }
-      .button-face { padding-inline: .9rem; }
+      .button-face { padding-inline: .8rem; }
       .descriptor { font-size: .75rem; }
       .stack { margin-block: 1.45rem 1.6rem; }
     }
@@ -386,13 +333,11 @@
       <symbol id="tulip" viewBox="0 0 40 50">
         <path d="M20 43q-3-12 0-23m-1 17q-9-1-12-9 10 1 12 9m0-5q9-1 12-10-9 2-12 10" fill="#78947a" stroke="#58745e" stroke-width="1.2"/>
         <path d="M20 26Q8 21 9 9l7 5 4-8 4 8 7-6q1 14-11 18Z" fill="#de85a1" stroke="currentColor" stroke-width="1.3"/>
-        <path d="M13 13q3 8 7 11l6-12" fill="none" stroke="#f6b9ca" stroke-width="1.5"/>
       </symbol>
       <symbol id="sunrise" viewBox="0 0 40 50">
         <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
           <path d="M10 29a10 10 0 0 1 20 0" fill="#e8b65d"/>
-          <path d="M20 10v4m-12 2 3 3m21-3-3 3M4 25l4 1m28-1-4 1"/>
-          <path d="M4 30q7-3 15 0t17 0M7 35q7-2 14 0t12 0m-21 5q7-2 16 0"/>
+          <path d="M20 10v4m-12 2 3 3m21-3-3 3M4 25l4 1m28-1-4 1M4 30q7-3 15 0t17 0M7 35q7-2 14 0t12 0m-21 5q7-2 16 0"/>
         </g>
       </symbol>
       <symbol id="sprout" viewBox="0 0 40 50">
@@ -407,8 +352,18 @@
         <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="m25 9 2.4 6 6.6.7-5 4.3 1.4 6.5-5.4-3.6-5.8 3.3 1.7-6.4-4.7-4.6 6.5-.4Z" fill="#f5d383"/>
           <path d="M20 25Q14 35 6 38m17-10q-6 10-13 13m14-8-4 6" fill="none"/>
-          <path d="m8 15 .9 2.5 2.6.8-2.6.9L8 22l-.8-2.8-2.7-.9 2.7-.8Z" fill="#b19bce" stroke="none"/>
         </g>
+      </symbol>
+      <symbol id="popper" viewBox="0 0 40 50">
+        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m8 40 6-21 12 12Z" fill="#eaa4a8"/>
+          <path d="m11 31 7 5m-5-13 11 9" fill="none"/>
+          <ellipse cx="20" cy="25" rx="3.5" ry="8" transform="rotate(-47 20 25)" fill="#f8cb81"/>
+          <path d="M22 18q6-2 2-6t5-5m-10 9-1-5m10 11 5-2" fill="none"/>
+        </g>
+        <circle cx="32" cy="11" r="1.8" fill="#987ac3"/>
+        <circle cx="12" cy="12" r="1.5" fill="#d48096"/>
+        <path d="m34 26 2 2-2 2-2-2Z" fill="#9c79b9"/>
       </symbol>
     </defs>
   </svg>
@@ -422,16 +377,16 @@
       </svg>
       <strong>little joys<b>.</b></strong>
     </div>
-    <span class="descriptor">Compliment generator</span>
+    <span class="descriptor">Compliments &amp; jokes</span>
   </header>
 
   <main>
     <section class="intro" aria-labelledby="headline">
       <h1 id="headline">A little kindness<br><em>goes a long way.</em></h1>
-      <p>A hundred little compliments to keep or pass along.</p>
+      <p>A kind word or a little laugh, signed and sealed for you.</p>
     </section>
 
-    <section aria-label="Generate a compliment">
+    <section aria-label="Generate a compliment or joke">
       <fieldset>
         <legend class="sr-only">Choose a compliment category</legend>
         <div class="filters">
@@ -444,7 +399,7 @@
       </fieldset>
 
       <div class="stack">
-        <article id="postcard" class="postcard" data-category="Friendship" aria-label="Your compliment">
+        <article id="postcard" class="postcard" data-kind="Friendship" aria-label="Your postcard">
           <div class="card-head">
             <span class="address">To: <i>you</i></span>
             <div class="postage" aria-hidden="true">
@@ -456,11 +411,13 @@
               </div>
             </div>
           </div>
-
           <div class="message">
             <span id="kind" class="kind">Friendship</span>
             <div id="quote-space" class="quote-space">
-              <p id="compliment">You remember the little things people tell you in passing.</p>
+              <div>
+                <p id="line">You remember the little things people tell you in passing.</p>
+                <p id="punchline" class="punchline" hidden></p>
+              </div>
             </div>
           </div>
           <div class="signature" aria-hidden="true"><span>♡</span> little joys.</div>
@@ -469,17 +426,22 @@
 
       <div class="actions">
         <button id="generate" class="action-button" type="button">
-          <span class="button-face">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="m10 2 2 6 5 2-5 2-2 6-2-6-5-2 5-2 2-6Zm9 12 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>
-            </svg>
-            Another Compliment
-          </span>
-          <span class="glint" aria-hidden="true"></span>
-          <span class="glint small" aria-hidden="true"></span>
+          <span class="button-face"><span aria-hidden="true">✦</span> Another Compliment</span>
+          <span class="sparkles" aria-hidden="true"></span>
         </button>
-
-        <button id="copy" class="action-button" type="button">
+        <button id="joke" class="action-button" type="button">
+          <span class="button-face">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+              <path d="M3 11a9 9 0 1 1 5 8l-4 1 1-4a9 9 0 0 1-2-5Z"/>
+              <path d="M8 12.5q4 5 8 0"/>
+              <circle cx="9" cy="9" r=".8" fill="currentColor" stroke="none"/>
+              <circle cx="15" cy="9" r=".8" fill="currentColor" stroke="none"/>
+            </svg>
+            Tell Me a Joke
+          </span>
+          <span class="sparkles" aria-hidden="true"></span>
+        </button>
+        <button id="copy" class="action-button" type="button" aria-label="Copy this compliment">
           <span class="button-face">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
               <rect x="8" y="8" width="12" height="13" rx="2"/>
@@ -487,20 +449,17 @@
             </svg>
             Copy
           </span>
-          <span class="glint" aria-hidden="true"></span>
-          <span class="glint small" aria-hidden="true"></span>
+          <span class="sparkles" aria-hidden="true"></span>
         </button>
       </div>
-
       <p id="announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
       <p id="status" role="status"></p>
       <div id="manual" hidden>
-        <label for="copy-text">Copy the selected compliment using your device’s copy command.</label>
+        <label for="copy-text">Use your device’s copy command on the selected text.</label>
         <textarea id="copy-text" rows="3" readonly></textarea>
       </div>
     </section>
   </main>
-
   <footer>Made to make you smile <span aria-hidden="true">♡</span></footer>
 
   <script>
@@ -617,114 +576,218 @@
       ]
     };
 
+    // Each entry is [setup, punchline], or [one-liner] for an instant joke.
+    const jokes = [
+      ["Why did the postcard get the job?", "It already had a stamp of approval."],
+      ["My cat finally learned to fetch.", "I throw the toy. She watches me fetch it."],
+      ["Why did the pencil leave the meeting early?", "They’d already made its point."],
+      ["What does a cloud wear under its raincoat?", "Thunderwear."],
+      ["I bought a notebook to organize all my other notebooks.", "Page one says, “Find the other notebooks.”"],
+      ["Why did the baker stop telling secrets in the kitchen?", "The whisk kept beating them out of him."],
+      ["How did the penguin carry its lunch?", "In a brrr-ito."],
+      ["What do you call a dinosaur with an impressive vocabulary?", "A thesaurus."],
+      ["My dog passed his obedience test on the first try.", "The examiner dropped a sandwich and said, “Sit.” He sat on it."],
+      ["Why did the scarecrow win an award?", "It was outstanding in its field."],
+
+      ["I asked the librarian for a book about turtles.", "“Hardback?” she asked. “Yes, and little heads.”"],
+      ["Why did the bicycle take a nap?", "It was two-tired."],
+      ["My friend says I take board games too seriously.", "I asked for that in writing, as required by the rules."],
+      ["What’s a frog’s favorite kind of music?", "Hip-hop. It already knows the steps."],
+      ["Why did the cookie visit the computer store?", "Someone told it to clear its cache."],
+      ["What did one wall say to the other?", "“Meet you at the corner.”"],
+      ["I taught my parrot to say “great question.”", "Now it runs every meeting."],
+      ["Why did the orange stop halfway up the hill?", "It ran out of juice."],
+      ["What’s the best thing about an elevator joke?", "It works on so many levels."],
+      ["Why did the gardener bring a ruler to the vegetable patch?", "To see how many feet were in a yard."],
+
+      ["My little brother opened a restaurant for stuffed animals.", "Business is slow. Everyone’s already stuffed."],
+      ["How do you invite a mushroom to dinner?", "Tell it there’s plenty of room at the cap table. Or just say, “Dinner at six.” Mushrooms are pretty chill."],
+      ["Why did the clock go back for seconds?", "That’s how it makes a minute."],
+      ["What did the ocean say to the beach?", "Nothing. It just waved."],
+      ["My grandma asked me how to screenshot her recipe.", "Before I could answer, she put the cookbook on the scanner."],
+      ["What did the little envelope want to be when it grew up?", "A letter of recommendation."],
+      ["Why are fish so good at knowing their lines?", "They rehearse in schools."],
+      ["I asked my GPS for a scenic route.", "It took me past the bakery three times. It knows me."],
+      ["Why did the moon return its library book early?", "It was only on its first quarter."],
+      ["How do bees get to school?", "On the school buzz."],
+
+      ["Why did the yarn bring two crochet hooks to dinner?", "It heard the noodles were tangled."],
+      ["My sister promised me the last slice of pizza.", "She cut it in half. Apparently there’s a new last slice."],
+      ["What’s a snail’s favorite kind of mail?", "Anything marked “no rush.”"],
+      ["Why did the keyboard take the afternoon off?", "It needed a little space."],
+      ["I entered my dog in a hide-and-seek contest.", "He hid beautifully. Then someone said “walk.”"],
+      ["What did the zero say to the eight?", "“Nice belt.”"],
+      ["Why was the calendar such a good storyteller?", "It always had a date to back up its story."],
+      ["What did one knitting needle say to the other?", "“I think we make a good pair, but let’s see how this unravels.”"],
+      ["Why was the tomato blushing at the picnic?", "It saw the salad dressing."],
+      ["I asked a duck for exact change.", "It said, “Sorry, I only carry bills.”"],
+
+      ["My favorite exercise is a cross between a lunge and a crunch. I call it lunch."],
+      ["I have a photographic memory. Most of my photos feature my thumb."],
+      ["My bed and I are perfect for each other. My alarm clock has requested a second opinion."],
+      ["I like to give my houseplants names. It feels more polite to trip over Gerald."],
+      ["Somewhere in my house there’s a very organized drawer full of things I bought to get organized."],
+      ["My superpower is folding a map into a completely different shape."],
+      ["I speak fluent printer. “Paper jam” usually means “please open every door I have.”"],
+      ["I made a tiny hat for my cactus. Finally, a hobby with a point."],
+      ["Our family recipe says “add cheese to taste.” At last, instructions I was born to follow."],
+      ["I bought a bookmark that says “You fell asleep here.” I appreciate accurate recordkeeping."]
+    ];
+
     const stamps = {
       Motivation: "#sunrise",
       Friendship: "#tulip",
       Kindness: "#sprout",
-      Confidence: "#comet"
+      Confidence: "#comet",
+      Joke: "#popper"
     };
 
     const categories = Object.keys(compliments);
-    const remaining = new Map();
+    const pools = new Map();
     const card = document.querySelector("#postcard");
     const kind = document.querySelector("#kind");
-    const quote = document.querySelector("#compliment");
+    const line = document.querySelector("#line");
+    const punchline = document.querySelector("#punchline");
     const art = document.querySelector("#stamp-art");
     const announcement = document.querySelector("#announcement");
-    const feedback = document.querySelector("#status");
+    const status = document.querySelector("#status");
     const manual = document.querySelector("#manual");
     const copyText = document.querySelector("#copy-text");
     const copyButton = document.querySelector("#copy");
-    let revision = 0;
 
-    // Reserve the postcard's responsive height once, outside the interaction path.
-    const measures = document.createDocumentFragment();
-    for (const text of Object.values(compliments).flat()) {
-      const line = document.createElement("span");
-      line.className = "measure";
-      line.setAttribute("aria-hidden", "true");
-      line.textContent = text;
-      measures.append(line);
-    }
-    document.querySelector("#quote-space").append(measures);
+    let jokePool = [];
+    let lastJoke;
+    let lastCompliment;
+    let revealTimer;
+    let copyRevision = 0;
+    let currentText = "";
 
-    function refill(category) {
-      remaining.set(category, [...compliments[category]]);
+    // Size the shared grid once so even a long punchline cannot push the buttons down.
+    const sizingFragment = document.createDocumentFragment();
+    const cardsToMeasure = [
+      ...Object.values(compliments).flat().map(text => [text]),
+      ...jokes
+    ];
+
+    for (const [firstLine, secondLine] of cardsToMeasure) {
+      const sample = document.createElement("div");
+      sample.className = "measure";
+      sample.setAttribute("aria-hidden", "true");
+      const first = document.createElement("p");
+      first.textContent = firstLine;
+      sample.append(first);
+      if (secondLine) {
+        const second = document.createElement("p");
+        second.className = "punchline";
+        second.textContent = secondLine;
+        sample.append(second);
+      }
+      sizingFragment.append(sample);
     }
+    document.querySelector("#quote-space").append(sizingFragment);
 
     function randomIndex(length) {
       return Math.floor(Math.random() * length);
     }
 
-    categories.forEach(refill);
-    quote.textContent = remaining.get("Friendship").shift();
+    function takeRandom(pool, previous) {
+      let index = randomIndex(pool.length);
+      if (pool.length > 1 && pool[index] === previous) {
+        index = (index + 1 + randomIndex(pool.length - 1)) % pool.length;
+      }
+      return pool.splice(index, 1)[0];
+    }
 
-    function draw(category) {
+    function refill(category) {
+      pools.set(category, [...compliments[category]]);
+    }
+
+    categories.forEach(refill);
+    lastCompliment = pools.get("Friendship").shift();
+    line.textContent = lastCompliment;
+    currentText = lastCompliment;
+
+    function showCard(category, firstLine, secondLine = "") {
+      // A new draw cancels any punchline still waiting from the previous joke.
+      clearTimeout(revealTimer);
+      copyRevision++;
+      manual.hidden = true;
+      status.textContent = "";
+      card.dataset.kind = category;
+      kind.textContent = category;
+      art.setAttribute("href", stamps[category]);
+      line.textContent = firstLine;
+      punchline.className = "punchline waiting";
+      punchline.textContent = secondLine;
+      punchline.hidden = !secondLine;
+
+      // Copy always includes the complete joke, even during its comic pause.
+      currentText = secondLine ? `${firstLine}\n${secondLine}` : firstLine;
+      copyButton.setAttribute("aria-label", category === "Joke" ? "Copy the full joke" : "Copy this compliment");
+      announcement.textContent = `${category}. ${firstLine}`;
+
+      if (secondLine) {
+        revealTimer = setTimeout(() => {
+          punchline.className = "punchline revealed";
+          announcement.textContent = secondLine;
+        }, 2500);
+      }
+    }
+
+    function showCompliment() {
+      let category = document.querySelector('input[name="category"]:checked').value;
       if (category === "All") {
-        let available = categories.filter(name => remaining.get(name).length > 0);
+        let available = categories.filter(name => pools.get(name).length > 0);
         if (available.length === 0) {
           categories.forEach(refill);
           available = categories;
         }
         category = available[randomIndex(available.length)];
-      } else if (remaining.get(category).length === 0) {
+      } else if (pools.get(category).length === 0) {
         refill(category);
       }
-
-      const pool = remaining.get(category);
-      let index = randomIndex(pool.length);
-      if (pool[index] === quote.textContent && pool.length > 1) {
-        index = (index + 1 + randomIndex(pool.length - 1)) % pool.length;
-      }
-      return { category, text: pool.splice(index, 1)[0] };
+      lastCompliment = takeRandom(pools.get(category), lastCompliment);
+      showCard(category, lastCompliment);
     }
 
-    function displayNext() {
-      const selected = document.querySelector('input[name="category"]:checked').value;
-      const next = draw(selected);
-      revision++;
-      manual.hidden = true;
-      feedback.textContent = "";
-      kind.textContent = next.category;
-      quote.textContent = next.text;
-      card.dataset.category = next.category;
-      art.setAttribute("href", stamps[next.category]);
-      announcement.textContent = `${next.category}. ${next.text}`;
+    function showJoke() {
+      if (jokePool.length === 0) jokePool = [...jokes];
+      lastJoke = takeRandom(jokePool, lastJoke);
+      showCard("Joke", ...lastJoke);
     }
 
-    async function copyCompliment() {
-      const text = quote.textContent;
-      const request = ++revision;
-      feedback.textContent = "";
+    async function copyCard() {
+      const text = currentText;
+      const request = ++copyRevision;
+      status.textContent = "";
       manual.hidden = true;
-
       try {
         await navigator.clipboard.writeText(text);
-        if (request === revision) feedback.textContent = "Copied!";
+        if (request === copyRevision) status.textContent = "Copied!";
         return;
       } catch {
-        if (request !== revision) return;
+        if (request !== copyRevision) return;
       }
 
       manual.hidden = false;
       copyText.value = text;
       copyText.focus();
       copyText.select();
-
       try {
         if (document.execCommand("copy")) {
           manual.hidden = true;
           copyButton.focus();
-          feedback.textContent = "Copied!";
+          status.textContent = "Copied!";
         }
       } catch {
-        // The selected text remains available for manual copying.
+        // The selected text remains ready for manual copying.
       }
     }
 
-    document.querySelector("fieldset").addEventListener("change", displayNext);
-    document.querySelector("#generate").addEventListener("click", displayNext);
-    copyButton.addEventListener("click", copyCompliment);
+    document.querySelector("fieldset").addEventListener("change", showCompliment);
+    document.querySelector("#generate").addEventListener("click", showCompliment);
+    document.querySelector("#joke").addEventListener("click", showJoke);
+    copyButton.addEventListener("click", copyCard);
   </script>
 </body>
 </html>
